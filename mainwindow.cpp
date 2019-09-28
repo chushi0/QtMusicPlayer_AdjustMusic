@@ -32,6 +32,36 @@
       return;                                                                 \
    }
 
+QString decodeAudio(QString file)
+{
+   QString dir      = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+   QString fileName = ".adjustmusic.%1.%2.%3";
+
+   QString readableFileName = file;
+
+   if (file.lastIndexOf('/') > 0)
+   {
+      readableFileName = file.mid(file.lastIndexOf('/') + 1);
+   }
+   if (file.lastIndexOf('\\') > 0)
+   {
+      readableFileName = file.mid(file.lastIndexOf('\\') + 1);
+   }
+
+   fileName = fileName.arg(readableFileName).arg(time(nullptr)).arg(clock());
+
+   QProcess process;
+
+   process.setProgram("ffmpeg.exe");
+   QStringList arguments;
+   arguments << "-i" << file << dir + "/" + fileName + ".wav";
+   process.setArguments(arguments);
+   process.start();
+   process.waitForFinished();
+   return dir + "/" + fileName + ".wav";
+}
+
+
 void MainWindow::generateLyricLabels(int need)
 {
    int size = lyricLabels.size();
@@ -642,7 +672,8 @@ MainWindow::MainWindow(const QString& musicFile, const QString& lyricFile, QWidg
       }
    });
    // 加载音乐
-   mediaPlayer.setMedia(QUrl::fromLocalFile(musicFile));
+   tempAudio = decodeAudio(musicFile);
+   mediaPlayer.setMedia(QUrl::fromLocalFile(tempAudio));
    // 加载歌词
    if (lyricFile.toLower().endsWith(".txt"))
    {
@@ -676,6 +707,7 @@ MainWindow::~MainWindow()
    deamonThread->interrupt();
    deamonThread->deleteLater();
    logTimeWindow->deleteLater();
+   QFile::remove(tempAudio);
 }
 
 

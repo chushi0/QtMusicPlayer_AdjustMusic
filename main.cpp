@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
    if (argc < 2)
    {
       musicFile = QFileDialog::getOpenFileName(nullptr, "选择音乐文件", QStandardPaths::writableLocation(QStandardPaths::MusicLocation),
-                                               "完全支持的音乐格式 (*.wav);;部分支持的音乐格式 (*.mp3 *.ogg);;全部文件 (*.*)");
+                                               "支持的音乐格式 (*.wav *.mp3 *.ogg *.flac *.aac *.m4a);;全部文件 (*.*)");
       if (musicFile.isNull())
       {
          return 0;
@@ -62,5 +62,7 @@ int main(int argc, char *argv[])
 
    w->show();
 
-   return a.exec();
+   int res = a.exec();
+   delete w;
+   return res;
 }

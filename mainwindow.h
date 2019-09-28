@@ -35,6 +35,7 @@ private:
    bool progressSliderLock;
    QList<long> timeLogger;
    LogTimeWindow *logTimeWindow;
+   QString tempAudio;
 
    class DeamonThread : public QThread {
 public:
